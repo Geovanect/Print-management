@@ -31,7 +31,7 @@ public class PrintQueueController {
         return printQueueService.listDocument();
     }
     @PostMapping("/print")
-    public Document printDocument(){
-        return printQueueService.printDocument();
+    public List<Document> printDocument(){
+        return printQueueService.listDocument();
     }
 }

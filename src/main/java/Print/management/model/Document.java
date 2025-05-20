@@ -1,39 +1,41 @@
 package Print.management.model;
 
 public class Document implements Comparable<Document> {
-    private String Name;
-    private boolean isPriority;
+    private String name;
+    private boolean priority;
+
+    public Document() {} // Necessário para @RequestBody no Spring
+
+    public Document(String name, boolean priority) {
+        this.name = name;
+        this.priority = priority;
+    }
 
     public String getName() {
-        return Name;
+        return name;
     }
 
     public void setName(String name) {
-        Name = name;
+        this.name = name;
     }
 
     public boolean isPriority() {
-        return isPriority;
+        return priority;
     }
 
     public void setPriority(boolean priority) {
-        isPriority = priority;
+        this.priority = priority;
     }
 
-    public Document(String n, boolean isP){
-        this.Name = n;
-        this.isPriority = isP;
-    }
     @Override
-    public int compareTo(Document other){
-        if(this.isPriority && !other.isPriority){
-            return -1;
-        } else if (!this.isPriority && other.isPriority) {
-            return 1;
-        }
-        else {
-            return 0;
-        }
+    public int compareTo(Document other) {
+        // Documentos prioritários vêm antes
+        return Boolean.compare(!this.priority, !other.priority);
+    }
+
+    @Override
+    public String toString() {
+        return name + " (priority: " + priority + ")";
     }
 }
 

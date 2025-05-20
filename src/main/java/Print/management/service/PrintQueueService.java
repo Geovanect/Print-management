@@ -1,41 +1,36 @@
 package Print.management.service;
-import org.springframework.stereotype.Service;
-import Print.management.model.Document;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.PriorityQueue;
+import Print.management.model.Document;
+import org.springframework.stereotype.Service;
+
+import java.util.*;
 
 @Service
 public class PrintQueueService {
 
-        PriorityQueue<Document> printQueue = new PriorityQueue<>();
+    private final PriorityQueue<Document> priorityQueue = new PriorityQueue<>();
+    private final Queue<Document> normalQueue = new LinkedList<>();
 
-        public void addDocument(Document doc){
-            printQueue.add(doc);
-        }
-
-        public Document printDocument(){
-            return printQueue.poll();
-        }
-
-        public void listQueue(){
-            if(printQueue.isEmpty()){
-                System.out.println("A fila de impressão está vazia");
-                return;
-            }
-            System.out.println("Documentos na fila de impressão:");
-            for(Document doc : printQueue){
-                System.out.println("-" + doc.getName() + (doc.isPriority() ? " (Prioritario) " : ""));
-            }
-        }
-
-        public boolean isqueueEmpty(){
-            return printQueue.isEmpty();
-        }
-
-        public List<Document> listDocument(){
-            return new ArrayList<>(printQueue);
+    public void addDocument(Document doc) {
+        if (doc.isPriority()) {
+            priorityQueue.offer(doc);
+        } else {
+            normalQueue.offer(doc);
         }
     }
 
+    public Document printDocument() {
+        if (!priorityQueue.isEmpty()) {
+            return priorityQueue.poll();
+        } else {
+            return normalQueue.poll();
+        }
+    }
+
+    public List<Document> listDocument() {
+        List<Document> allDocs = new ArrayList<>();
+        allDocs.addAll(priorityQueue);
+        allDocs.addAll(normalQueue);
+        return allDocs;
+    }
+}
