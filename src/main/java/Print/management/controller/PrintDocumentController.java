@@ -10,32 +10,32 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/documents")
-@CrossOrigin(origins = "*")
 public class PrintDocumentController {
 
     @Autowired
     private PrintDocumentRepository repository;
 
     @GetMapping
-    public List<PrintDocument> getAllDocuments() {
-        return repository.findAll();
+    public ResponseEntity<List<PrintDocument>> getAllDocuments() {
+        return ResponseEntity.ok(repository.findAllOrderByPriorityAndId());
     }
 
     @PostMapping
-    public PrintDocument createDocument(@RequestBody PrintDocument document) {
-        return repository.save(document);
+    public ResponseEntity<PrintDocument> createDocument(@RequestBody PrintDocument document) {
+        document.setStatus("PENDING");
+        return ResponseEntity.ok(repository.save(document));
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<PrintDocument> updateDocument(@PathVariable Long id, @RequestBody PrintDocument document) {
-        return repository.findById(id)
-                .map(existingDoc -> {
-                    existingDoc.setName(document.getName());
-                    existingDoc.setPriority(document.isPriority());
-                    existingDoc.setStatus(document.getStatus());
-                    return ResponseEntity.ok(repository.save(existingDoc));
-                })
-                .orElse(ResponseEntity.notFound().build());
+    @PostMapping("/print")
+    public ResponseEntity<PrintDocument> printDocument() {
+        List<PrintDocument> pendingDocs = repository.findByStatusOrderByPriorityAndId("PENDING");
+        if (pendingDocs.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        PrintDocument docToPrint = pendingDocs.get(0);
+        docToPrint.setStatus("COMPLETED");
+        return ResponseEntity.ok(repository.save(docToPrint));
     }
 
     @DeleteMapping("/{id}")
