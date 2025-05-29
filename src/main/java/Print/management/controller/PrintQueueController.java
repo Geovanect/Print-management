@@ -26,12 +26,12 @@ public class PrintQueueController {
         printQueueService.addDocument(document);
     }
 
-    @GetMapping()
+    @PostMapping("/listdocs")
     public List<Document> listDocument(){
         return printQueueService.listDocument();
     }
     @PostMapping("/print")
-    public List<Document> printDocument(){
-        return printQueueService.listDocument();
+    public Document printDocument(){
+        return printQueueService.printDocument();
     }
 }
